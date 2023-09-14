@@ -17,7 +17,7 @@ public class MyManualTest {
     public void testManually() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newBuilder()
             .build();
-        HttpRequest request = HttpRequest.newBuilder(URI.create("http://localhost:8185/rs/cxf"))
+        HttpRequest request = HttpRequest.newBuilder(URI.create("http://localhost:8185/rs/cxf?requests=10"))
             .POST(HttpRequest.BodyPublishers.noBody())
             .build();
         HttpResponse<String> response =

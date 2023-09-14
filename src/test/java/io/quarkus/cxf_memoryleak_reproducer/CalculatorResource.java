@@ -20,10 +20,12 @@ public class CalculatorResource implements QuarkusTestResourceLifecycleManager, 
         .withClasspathResourceMapping("wiremock", "/home/wiremock", BindMode.READ_ONLY)
         .withExposedPorts(8080);
     private Map<String, String> initArgs;
-    private Optional<String> containerNetworkId;
+    private Optional<String> containerNetworkId = Optional.empty();
 
-    public static void main(String[] args) {
-        new CalculatorResource().start();
+    public static void main(String[] args) throws InterruptedException {
+        CalculatorResource resource = new CalculatorResource();
+        resource.start();
+        Thread.sleep(3600 * 1000);
     }
 
     @Override
@@ -42,8 +44,10 @@ public class CalculatorResource implements QuarkusTestResourceLifecycleManager, 
             .withHeader("Content-Type", WireMock.containing("application/soap+xml"))
             .willReturn(aResponse().withBodyFile("bigdata.xml").withHeader("Content-Type", "application/soap+xml;charset=UTF-8")));
 
-        if (Boolean.parseBoolean(initArgs.get("Local"))) {
-            return Map.of("calculator.url", "http://%s:%d".formatted(container.getHost(), container.getFirstMappedPort()));
+        if (initArgs == null || Boolean.parseBoolean(initArgs.get("Local"))) {
+            String url = "http://%s:%d".formatted(container.getHost(), container.getFirstMappedPort());
+            System.out.println("URL: %s".formatted(url));
+            return Map.of("calculator.url", url);
         } else {
             return Map.of("calculator.url", "http://%s:%d".formatted("wiremock", 8080));
         }
