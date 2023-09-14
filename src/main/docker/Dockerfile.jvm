@@ -1,0 +1,9 @@
+FROM registry.access.redhat.com/ubi8/openjdk-17:1.16-1
+
+ENV APP=/calculator
+
+COPY target/quarkus-app $APP/quarkus-app
+
+CMD ["java", "-Xmx150m", "-jar", "/calculator/quarkus-app/quarkus-run.jar"]
+EXPOSE 8185/tcp
+WORKDIR $APP
